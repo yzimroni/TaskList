@@ -35,6 +35,7 @@ public class MenuManager implements Listener {
 		if (hasMenu(p.getUniqueId())) {
 			p.closeInventory(); //onInvenotryClose will handle it
 		}
+		openMenus.put(p.getUniqueId(), menu);
 		p.openInventory(menu.createInventory());
 		
 	}
@@ -50,11 +51,15 @@ public class MenuManager implements Listener {
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent e) {
-		if (e.getWhoClicked() instanceof Player) {
+		if (!(e.getWhoClicked() instanceof Player)) {
 			return;
 		}
 		Player p = (Player) e.getWhoClicked();
 		if (hasMenu(p.getUniqueId())) {
+			e.setCancelled(true);
+			if (e.getCurrentItem() == null) {
+				return;
+			}
 			Menu menu = getMenu(p.getUniqueId());
 			menu.onInventoryClick(e);
 		}
