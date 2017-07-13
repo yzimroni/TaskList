@@ -1,5 +1,8 @@
 package net.yzimroni.tasklist.menu.menus;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +11,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import net.yzimroni.tasklist.menu.Menu;
+import net.yzimroni.tasklist.menu.builder.MenuBuilder;
 import net.yzimroni.tasklist.task.Task;
 import net.yzimroni.tasklist.utils.ItemBuilder;
 
@@ -34,7 +38,17 @@ public class TaskMenu extends Menu {
 
 	public void updateInvenotry(Inventory i) {
 		i.setItem(4, task.getItemStack());
-		i.setItem(13, task.isCompleted() ? UNCOMPLETE : COMPLETE);
+		
+		MenuBuilder builder = new MenuBuilder(i);
+		builder.setRowsPerPage(1);
+		builder.setEntriesPerRow(7);
+		builder.setStartRow(1);
+		
+		List<ItemStack> items = new ArrayList<ItemStack>();
+		items.add(task.isCompleted() ? UNCOMPLETE : COMPLETE);
+		
+		
+		builder.create(items);
 	}
 
 	@Override

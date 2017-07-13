@@ -48,12 +48,12 @@ public class TaskListMenu extends Menu {
 		 * TODO find out a way to change the window title After it, we can change the
 		 * back/next buttons to only update the current window, and not open another one
 		 */
-		MenuBuilder creator = new MenuBuilder(i);
-		creator.setEntriesPerRow(TASKS_PER_ROW);
-		//creator.setRowEndSpace(1);
-		//creator.setRowStartSpace(1);
-		creator.setRowsPerPage(ROWS_PER_PAGE);
-		creator.setStartRow(1);
+		MenuBuilder builder = new MenuBuilder(i);
+		builder.setEntriesPerRow(TASKS_PER_ROW);
+		//builder.setRowEndSpace(1);
+		//builder.setRowStartSpace(1);
+		builder.setRowsPerPage(ROWS_PER_PAGE);
+		builder.setStartRow(1);
 		List<Task> tasks = TaskListPlugin.get().getManager().getTasks().stream().sorted((t1, t2) -> {
 			if (t1.isCompleted() != t2.isCompleted()) {
 				if (t1.isCompleted()) {
@@ -64,7 +64,7 @@ public class TaskListMenu extends Menu {
 			}
 			return (int) (t2.getCreated() - t1.getCreated());
 		}).collect(Collectors.toList());
-		creator.create(getTasksForPage(tasks).stream().map(Task::getItemStack).collect(Collectors.toList()));
+		builder.create(getTasksForPage(tasks).stream().map(Task::getItemStack).collect(Collectors.toList()));
 
 		if (hasPreviousPage()) {
 			// 48

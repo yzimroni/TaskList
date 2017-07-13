@@ -6,4 +6,4 @@ authors: [yzimroni]
 commands:
   tasklist:
     description: TaskList
-    aliases: [tl task, t]
+    aliases: [tl, task, t]
