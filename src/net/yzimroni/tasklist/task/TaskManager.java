@@ -12,7 +12,7 @@ public class TaskManager {
 
 	public TaskManager() {
 		Random r = new Random();
-		for (int i = 0; i < 100 + (r.nextInt(100) - 50); i++) {
+		for (int i = 0; i < 100 /*+ (r.nextInt(100) - 50)*/; i++) {
 
 			tasks.add(new Task(i + 1, "Task" + i + "_" + r.nextInt(), r.nextInt(100) + 1,
 					UUID.fromString("341899b6-b28f-47a3-b85e-3aa3b491d0d3"),

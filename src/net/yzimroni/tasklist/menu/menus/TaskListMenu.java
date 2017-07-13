@@ -2,6 +2,7 @@ package net.yzimroni.tasklist.menu.menus;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.yzimroni.tasklist.TaskListPlugin;
 import net.yzimroni.tasklist.menu.Menu;
+import net.yzimroni.tasklist.menu.MenuBuilder;
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.task.Task;
 import net.yzimroni.tasklist.utils.Utils;
@@ -26,13 +28,7 @@ public class TaskListMenu extends Menu {
 	private static final int ROWS_PER_PAGE = 3;
 	private static final int TASKS_PER_PAGE = TASKS_PER_ROW * ROWS_PER_PAGE;
 
-	private static final int START_SPACING = 1;
-	private static final int END_SPACING = 1;
-
 	private int page;
-
-	private int currentSlot = 0;
-	private int currentSlotRow = 0;
 
 	public TaskListMenu(int page) {
 		super();
@@ -51,12 +47,14 @@ public class TaskListMenu extends Menu {
 		 * TODO find out a way to change the window title After it, we can change the
 		 * back/next buttons to only update the current window, and not open another one
 		 */
-		currentSlot = 9;
-		currentSlotRow = 0;
-		List<Task> tasks = getTasksForPage();
-		tasks.forEach(t -> {
-			i.setItem(getNextTaskSlot(), t.getItemStack());
-		});
+		MenuBuilder creator = new MenuBuilder(i);
+		creator.setEntriesPerRow(TASKS_PER_ROW);
+		creator.setRowEndSpace(1);
+		creator.setRowStartSpace(1);
+		creator.setRowsPerPage(ROWS_PER_PAGE);
+		creator.setStartRow(1);
+		creator.create(getTasksForPage().stream().map(Task::getItemStack).collect(Collectors.toList()));
+
 		if (hasPreviousPage()) {
 			// 48
 			i.setItem(48, Utils.ITEM_PREVIOUS);
@@ -66,7 +64,7 @@ public class TaskListMenu extends Menu {
 		diamond.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		ItemMeta meta = diamond.getItemMeta();
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Tasks");
+		meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Tasks - Page " + page);
 		meta.setLore(Arrays.asList("Total tasks: " + TaskListPlugin.get().getManager().getTasks().size(),
 				"Completed tasks: " + TaskListPlugin.get().getManager().getTasks(true).size(),
 				"In progress tasks: " + TaskListPlugin.get().getManager().getTasks(false).size()));
@@ -77,15 +75,6 @@ public class TaskListMenu extends Menu {
 			// 50
 			i.setItem(50, Utils.ITEM_NEXT);
 		}
-	}
-
-	public int getNextTaskSlot() {
-		if (currentSlotRow == TASKS_PER_ROW) {
-			currentSlotRow = 1;
-			return currentSlot += (END_SPACING + START_SPACING + 1);
-		}
-		currentSlotRow++;
-		return ++currentSlot;
 	}
 
 	public boolean hasPreviousPage() {
