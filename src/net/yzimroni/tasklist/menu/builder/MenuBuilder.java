@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 public class MenuBuilder {
 
 	public static ItemStack BR = new ItemStack(Material.BEACON);
-	public final static int SLOTS_PER_ROW = 9;
+	private final static int SLOTS_PER_ROW = 9;
 
 	private Inventory inventory;
 
@@ -47,6 +47,7 @@ public class MenuBuilder {
 		List<MenuRow> rows = getItemRows(items);
 
 		for (MenuRow row : rows) {
+			row.calculateAlign(alignment, entriesPerRow);
 			currentSlot += rowStartSpace;
 			currentSlot += row.getAlignment()[0];
 
@@ -67,7 +68,6 @@ public class MenuBuilder {
 
 		for (ItemStack item : items) {
 			if (row.getItems().size() == entriesPerRow || item == BR) {
-				row.calculateAlign(alignment, entriesPerRow);
 				rows.add(row);
 				row = new MenuRow();
 				if (item == BR) {
@@ -78,7 +78,6 @@ public class MenuBuilder {
 		}
 
 		if (!row.getItems().isEmpty()) {
-			row.calculateAlign(alignment, entriesPerRow);
 			rows.add(row);
 		}
 
