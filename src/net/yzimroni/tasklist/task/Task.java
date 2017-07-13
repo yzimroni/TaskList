@@ -22,11 +22,12 @@ public class Task {
 
 	private boolean changed;
 
-	public Task(int id, String name, int xp, long created, long completed) {
+	public Task(int id, String name, int xp, UUID creator, long created, long completed) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.xp = xp;
+		this.creator = creator;
 		this.created = created;
 		this.completed = completed;
 	}
@@ -38,7 +39,7 @@ public class Task {
 		meta.setLore(Arrays.asList("Task: " + getName(), "xp: " + xp,
 				"Creator: " + Bukkit.getOfflinePlayer(creator).getName(), "Created: " + Utils.formatDate(created),
 				"Completed: " + (isCompleted() ? "Yes " + Utils.formatDate(completed) : "No")));
-		
+
 		i.setItemMeta(meta);
 
 		return i;
