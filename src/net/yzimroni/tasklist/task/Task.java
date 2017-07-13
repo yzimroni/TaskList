@@ -33,7 +33,7 @@ public class Task {
 	}
 
 	public ItemStack getItemStack() {
-		ItemStack i = new ItemStack(isCompleted() ? Material.BOOK : Material.WRITTEN_BOOK);
+		ItemStack i = new ItemStack(isCompleted() ? Material.MINECART : Material.STORAGE_MINECART);
 		ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName((isCompleted() ? ChatColor.GOLD : ChatColor.BLUE) + getName());
 		meta.setLore(Arrays.asList("Task: " + getName(), "xp: " + xp,
