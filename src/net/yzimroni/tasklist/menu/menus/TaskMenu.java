@@ -6,7 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -27,6 +26,22 @@ public class TaskMenu extends Menu {
 	public TaskMenu(Task task) {
 		super();
 		this.task = task;
+		addItemTrackers();
+	}
+
+	private void addItemTrackers() {
+		getItemTracker().addItemHandler(COMPLETE, (i, p) -> {
+			if (!task.isCompleted()) {
+				task.setCompleted(System.currentTimeMillis());
+				updateInvenotry(p.getOpenInventory().getTopInventory());
+			}
+		});
+		getItemTracker().addItemHandler(UNCOMPLETE, (i, p) -> {
+			if (task.isCompleted()) {
+				task.setCompleted(0);
+				updateInvenotry(p.getOpenInventory().getTopInventory());
+			}
+		});
 	}
 
 	@Override
@@ -38,29 +53,16 @@ public class TaskMenu extends Menu {
 
 	public void updateInvenotry(Inventory i) {
 		i.setItem(4, task.getItemStack());
-		
+
 		MenuBuilder builder = new MenuBuilder(i);
 		builder.setRowsPerPage(1);
 		builder.setEntriesPerRow(7);
 		builder.setStartRow(1);
-		
+
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		items.add(task.isCompleted() ? UNCOMPLETE : COMPLETE);
-		
-		
-		builder.create(items);
-	}
 
-	@Override
-	public void onInventoryClick(InventoryClickEvent e) {
-		ItemStack i = e.getCurrentItem();
-		if (COMPLETE.isSimilar(i)) {
-			task.setCompleted(System.currentTimeMillis());
-			updateInvenotry(e.getClickedInventory());
-		} else if (UNCOMPLETE.isSimilar(i)) {
-			task.setCompleted(0);
-			updateInvenotry(e.getClickedInventory());
-		}
+		builder.create(items);
 	}
 
 }

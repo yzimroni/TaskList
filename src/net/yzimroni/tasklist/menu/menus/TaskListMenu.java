@@ -8,8 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -33,6 +31,7 @@ public class TaskListMenu extends Menu {
 	public TaskListMenu(int page) {
 		super();
 		this.page = page;
+		addItemHandlers();
 	}
 
 	@Override
@@ -40,6 +39,29 @@ public class TaskListMenu extends Menu {
 		Inventory i = Bukkit.createInventory(null, 6 * 9, "Task List");
 		updateInvenotry(i);
 		return i;
+	}
+
+	private void addItemHandlers() {
+		getItemTracker().addItemHandler(Utils.ITEM_PREVIOUS, (i, p) -> {
+			if (hasPreviousPage()) {
+				page--;
+				updateInvenotry(p.getOpenInventory().getTopInventory());
+			}
+		});
+		getItemTracker().addItemHandler(Utils.ITEM_NEXT, (i, p) -> {
+			if (hasNextPage()) {
+				page++;
+				updateInvenotry(p.getOpenInventory().getTopInventory());
+			}
+		});
+		getItemTracker().addItemMatcherHandler((i) -> {
+			return i.hasItemMeta() && i.getItemMeta().hasDisplayName() && TaskListPlugin.get().getManager()
+					.getTaskByName(ChatColor.stripColor(i.getItemMeta().getDisplayName())) != null;
+		}, (i, p) -> {
+			Task t = TaskListPlugin.get().getManager()
+					.getTaskByName(ChatColor.stripColor(i.getItemMeta().getDisplayName()));
+			MenuManager.get().open(p, new TaskMenu(t));
+		});
 	}
 
 	public void updateInvenotry(Inventory i) {
@@ -50,8 +72,8 @@ public class TaskListMenu extends Menu {
 		 */
 		MenuBuilder builder = new MenuBuilder(i);
 		builder.setEntriesPerRow(TASKS_PER_ROW);
-		//builder.setRowEndSpace(1);
-		//builder.setRowStartSpace(1);
+		// builder.setRowEndSpace(1);
+		// builder.setRowStartSpace(1);
 		builder.setRowsPerPage(ROWS_PER_PAGE);
 		builder.setStartRow(1);
 		List<Task> tasks = TaskListPlugin.get().getManager().getTasks().stream().sorted((t1, t2) -> {
@@ -105,31 +127,6 @@ public class TaskListMenu extends Menu {
 			index_end = tasks.size();
 		}
 		return tasks.subList(index_start, index_end);
-	}
-
-	@Override
-	public void onInventoryClick(InventoryClickEvent e) {
-		Player p = (Player) e.getWhoClicked();
-		ItemStack i = e.getCurrentItem();
-		if (i.isSimilar(Utils.ITEM_PREVIOUS)) {
-			 page--;
-			 updateInvenotry(e.getClickedInventory());
-			//MenuManager.get().open(p, new TaskListMenu(--page));
-			return;
-		} else if (i.isSimilar(Utils.ITEM_NEXT)) {
-			 page++;
-			 updateInvenotry(e.getClickedInventory());
-			//MenuManager.get().open(p, new TaskListMenu(++page));
-			return;
-		}
-		
-		if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
-			Task t = TaskListPlugin.get().getManager().getTaskByName(ChatColor.stripColor(i.getItemMeta().getDisplayName()));
-			if (t != null) {
-				MenuManager.get().open(p, new TaskMenu(t));
-				return;
-			}
-		}
 	}
 
 }
