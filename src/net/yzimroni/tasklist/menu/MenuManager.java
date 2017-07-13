@@ -67,6 +67,7 @@ public class MenuManager implements Listener {
 				return;
 			}
 			Menu menu = getMenu(p.getUniqueId());
+			menu.getItemTracker().onInventoryClick(e.getCurrentItem(), p);
 			menu.onInventoryClick(e);
 		}
 	}

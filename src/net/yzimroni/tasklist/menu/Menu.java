@@ -6,6 +6,8 @@ import org.bukkit.inventory.Inventory;
 
 public abstract class Menu {
 	
+	private MenuItemTracker itemTracker = new MenuItemTracker();
+	
 	public abstract Inventory createInventory(Inventory inventory);
 	
 	public void onInventoryClose(InventoryCloseEvent e) {
@@ -14,6 +16,10 @@ public abstract class Menu {
 	
 	public void onInventoryClick(InventoryClickEvent e) {
 		
+	}
+
+	public MenuItemTracker getItemTracker() {
+		return itemTracker;
 	}
 
 }
