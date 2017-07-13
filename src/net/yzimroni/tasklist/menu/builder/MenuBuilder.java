@@ -1,5 +1,6 @@
 package net.yzimroni.tasklist.menu.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -10,9 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.base.Preconditions;
 
 public class MenuBuilder {
-	
+
 	public static ItemStack BR = new ItemStack(Material.BEACON);
-	private final static int SLOTS_PER_ROW = 9;
+	public final static int SLOTS_PER_ROW = 9;
 
 	private Inventory inventory;
 
@@ -28,9 +29,6 @@ public class MenuBuilder {
 
 	// Build values
 	private int currentSlot = 0;
-	private int currentSlotRow = 0;
-	private int itemsLeft = 0;
-	private int[] currentRowAlign = null;
 
 	public MenuBuilder(Inventory inventory) {
 		super();
@@ -44,19 +42,47 @@ public class MenuBuilder {
 
 	public Inventory create(List<ItemStack> items) {
 		checkValid();
-		currentSlot = ((startRow * SLOTS_PER_ROW) - 1) + rowStartSpace;
-		currentSlotRow = 0;
-		itemsLeft = items.size();
-		items.forEach(i -> {
-			if (i == BR) {
-				currentSlot += (entriesPerRow - currentSlotRow);
-				currentSlotRow = entriesPerRow;
-			} else {
-				inventory.setItem(getNextSlot(), i);
-			}
-			itemsLeft--;
-		});
+		currentSlot = ((startRow * SLOTS_PER_ROW) - 1);
+
+		List<MenuRow> rows = getItemRows(items);
+
+		for (MenuRow row : rows) {
+			currentSlot += rowStartSpace;
+			currentSlot += row.getAlignment()[0];
+
+			row.getItems().forEach(i -> {
+				inventory.setItem(++currentSlot, i);
+			});
+
+			currentSlot += rowEndSpace;
+			currentSlot += row.getAlignment()[1];
+		}
+
 		return inventory;
+	}
+
+	private List<MenuRow> getItemRows(List<ItemStack> items) {
+		List<MenuRow> rows = new ArrayList<MenuRow>();
+		MenuRow row = new MenuRow();
+
+		for (ItemStack item : items) {
+			if (row.getItems().size() == entriesPerRow || item == BR) {
+				row.calculateAlign(alignment, entriesPerRow);
+				rows.add(row);
+				row = new MenuRow();
+				if (item == BR) {
+					continue;
+				}
+			}
+			row.addItem(item);
+		}
+
+		if (!row.getItems().isEmpty()) {
+			row.calculateAlign(alignment, entriesPerRow);
+			rows.add(row);
+		}
+
+		return rows;
 	}
 
 	private void checkValid() {
@@ -80,18 +106,6 @@ public class MenuBuilder {
 				"startRow + rowsPerPage must be " + getInventoryRowNumber() + " or lower");
 	}
 
-	private int getNextSlot() {
-		if (currentSlotRow == entriesPerRow) {
-			currentSlotRow = 1;
-			if (itemsLeft < entriesPerRow) {
-				//currentRowAlign = alignment.calculateAlign(itemsLeft, total)
-			}
-			return currentSlot += (rowEndSpace + rowStartSpace + 1);
-		}
-		currentSlotRow++;
-		return ++currentSlot;
-	}
-	
 	public int getInventoryRowNumber() {
 		return inventory.getSize() / SLOTS_PER_ROW;
 	}
@@ -140,7 +154,7 @@ public class MenuBuilder {
 		Preconditions.checkArgument(rowEndSpace <= 8, "rowEndSpace must be 8 or below");
 		this.rowEndSpace = rowEndSpace;
 	}
-	
+
 	public void setRowSpace(int start, int end) {
 		setRowStartSpace(start);
 		setRowEndSpace(end);
