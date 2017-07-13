@@ -1,4 +1,4 @@
-package net.yzimroni.tasklist;
+package net.yzimroni.tasklist.utils;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;

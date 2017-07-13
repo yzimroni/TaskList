@@ -1,18 +1,24 @@
 package net.yzimroni.tasklist.menu.menus;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.yzimroni.tasklist.TaskListPlugin;
-import net.yzimroni.tasklist.Utils;
 import net.yzimroni.tasklist.menu.Menu;
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.task.Task;
+import net.yzimroni.tasklist.utils.Utils;
 
 public class TaskListMenu extends Menu {
 
@@ -54,8 +60,19 @@ public class TaskListMenu extends Menu {
 		if (hasPreviousPage()) {
 			// 48
 			i.setItem(48, Utils.ITEM_PREVIOUS);
-
 		}
+
+		ItemStack diamond = new ItemStack(Material.DIAMOND);
+		diamond.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, 1);
+		ItemMeta meta = diamond.getItemMeta();
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Tasks");
+		meta.setLore(Arrays.asList("Total tasks: " + TaskListPlugin.get().getManager().getTasks().size(),
+				"Completed tasks: " + TaskListPlugin.get().getManager().getTasks(true).size(),
+				"In progress tasks: " + TaskListPlugin.get().getManager().getTasks(false).size()));
+		diamond.setItemMeta(meta);
+		i.setItem(49, diamond);
+
 		if (hasNextPage()) {
 			// 50
 			i.setItem(50, Utils.ITEM_NEXT);
@@ -99,10 +116,20 @@ public class TaskListMenu extends Menu {
 			// page--;
 			// updateInvenotry(e.getClickedInventory());
 			MenuManager.get().open(p, new TaskListMenu(--page));
+			return;
 		} else if (i.isSimilar(Utils.ITEM_NEXT)) {
 			// page++;
 			// updateInvenotry(e.getClickedInventory());
 			MenuManager.get().open(p, new TaskListMenu(++page));
+			return;
+		}
+		
+		if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
+			Task t = TaskListPlugin.get().getManager().getTaskByName(ChatColor.stripColor(i.getItemMeta().getDisplayName()));
+			if (t != null) {
+				MenuManager.get().open(p, new TaskMenu(t));
+				return;
+			}
 		}
 	}
 

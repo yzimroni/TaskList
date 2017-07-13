@@ -9,7 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.yzimroni.tasklist.Utils;
+import net.yzimroni.tasklist.utils.Utils;
 
 public class Task {
 
