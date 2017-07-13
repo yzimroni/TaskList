@@ -8,17 +8,18 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
 
 public class MenuManager implements Listener {
 
 	private HashMap<UUID, Menu> openMenus = new HashMap<UUID, Menu>();
-	
+
 	private static MenuManager instance;
-	
+
 	public MenuManager() {
 		instance = this;
 	}
-	
+
 	public static MenuManager get() {
 		return instance;
 	}
@@ -30,14 +31,19 @@ public class MenuManager implements Listener {
 	public Menu getMenu(UUID u) {
 		return openMenus.get(u);
 	}
-	
+
 	public void open(Player p, Menu menu) {
+		Inventory inventory = null;
 		if (hasMenu(p.getUniqueId())) {
-			p.closeInventory(); //onInvenotryClose will handle it
+			inventory = p.getOpenInventory().getTopInventory();
+			openMenus.remove(p.getUniqueId());
 		}
 		openMenus.put(p.getUniqueId(), menu);
-		p.openInventory(menu.createInventory());
-		
+		p.openInventory(menu.createInventory(inventory));
+		if (!hasMenu(p.getUniqueId())) {
+			openMenus.put(p.getUniqueId(), menu);
+		}
+
 	}
 
 	@EventHandler

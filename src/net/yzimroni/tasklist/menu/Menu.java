@@ -6,7 +6,7 @@ import org.bukkit.inventory.Inventory;
 
 public abstract class Menu {
 	
-	public abstract Inventory createInventory();
+	public abstract Inventory createInventory(Inventory inventory);
 	
 	public void onInventoryClose(InventoryCloseEvent e) {
 		

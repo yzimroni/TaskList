@@ -3,7 +3,6 @@ package net.yzimroni.tasklist.menu.menus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +26,7 @@ public class TaskMenu extends Menu {
 	}
 
 	@Override
-	public Inventory createInventory() {
+	public Inventory createInventory(Inventory inventory) {
 		Inventory i = Bukkit.createInventory(null, 2 * 9, "Task: " + task.getName());
 		updateInvenotry(i);
 		return i;
@@ -40,7 +39,6 @@ public class TaskMenu extends Menu {
 
 	@Override
 	public void onInventoryClick(InventoryClickEvent e) {
-		Player p = (Player) e.getWhoClicked();
 		ItemStack i = e.getCurrentItem();
 		if (COMPLETE.isSimilar(i)) {
 			task.setCompleted(System.currentTimeMillis());

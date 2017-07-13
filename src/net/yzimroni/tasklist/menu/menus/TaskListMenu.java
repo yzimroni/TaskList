@@ -36,13 +36,14 @@ public class TaskListMenu extends Menu {
 	}
 
 	@Override
-	public Inventory createInventory() {
-		Inventory i = Bukkit.createInventory(null, 6 * 9, "Task List - Page " + page);
+	public Inventory createInventory(Inventory inventory) {
+		Inventory i = Bukkit.createInventory(null, 6 * 9, "Task List");
 		updateInvenotry(i);
 		return i;
 	}
 
 	public void updateInvenotry(Inventory i) {
+		i.clear();
 		/*
 		 * TODO find out a way to change the window title After it, we can change the
 		 * back/next buttons to only update the current window, and not open another one
@@ -53,7 +54,17 @@ public class TaskListMenu extends Menu {
 		//creator.setRowStartSpace(1);
 		creator.setRowsPerPage(ROWS_PER_PAGE);
 		creator.setStartRow(1);
-		creator.create(getTasksForPage().stream().map(Task::getItemStack).collect(Collectors.toList()));
+		List<Task> tasks = TaskListPlugin.get().getManager().getTasks().stream().sorted((t1, t2) -> {
+			if (t1.isCompleted() != t2.isCompleted()) {
+				if (t1.isCompleted()) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+			return (int) (t2.getCreated() - t1.getCreated());
+		}).collect(Collectors.toList());
+		creator.create(getTasksForPage(tasks).stream().map(Task::getItemStack).collect(Collectors.toList()));
 
 		if (hasPreviousPage()) {
 			// 48
@@ -87,8 +98,7 @@ public class TaskListMenu extends Menu {
 		return tasks.size() > index_end;
 	}
 
-	public List<Task> getTasksForPage() {
-		List<Task> tasks = TaskListPlugin.get().getManager().getTasks();
+	public List<Task> getTasksForPage(List<Task> tasks) {
 		int index_start = (page - 1) * TASKS_PER_PAGE;
 		int index_end = (page) * TASKS_PER_PAGE;
 		if (index_end > (tasks.size())) {
@@ -102,14 +112,14 @@ public class TaskListMenu extends Menu {
 		Player p = (Player) e.getWhoClicked();
 		ItemStack i = e.getCurrentItem();
 		if (i.isSimilar(Utils.ITEM_PREVIOUS)) {
-			// page--;
-			// updateInvenotry(e.getClickedInventory());
-			MenuManager.get().open(p, new TaskListMenu(--page));
+			 page--;
+			 updateInvenotry(e.getClickedInventory());
+			//MenuManager.get().open(p, new TaskListMenu(--page));
 			return;
 		} else if (i.isSimilar(Utils.ITEM_NEXT)) {
-			// page++;
-			// updateInvenotry(e.getClickedInventory());
-			MenuManager.get().open(p, new TaskListMenu(++page));
+			 page++;
+			 updateInvenotry(e.getClickedInventory());
+			//MenuManager.get().open(p, new TaskListMenu(++page));
 			return;
 		}
 		
