@@ -1,0 +1,9 @@
+name: TaskList
+main: net.yzimroni.tasklist.TaskListPlugin
+version: 1.0
+description: TaskList plugin
+authors: [yzimroni]
+commands:
+  tasklist:
+    description: TaskList
+    aliases: [tl task, t]
