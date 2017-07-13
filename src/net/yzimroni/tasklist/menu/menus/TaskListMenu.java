@@ -17,8 +17,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.yzimroni.tasklist.TaskListPlugin;
 import net.yzimroni.tasklist.menu.Menu;
-import net.yzimroni.tasklist.menu.MenuBuilder;
 import net.yzimroni.tasklist.menu.MenuManager;
+import net.yzimroni.tasklist.menu.builder.MenuBuilder;
 import net.yzimroni.tasklist.task.Task;
 import net.yzimroni.tasklist.utils.Utils;
 
@@ -49,8 +49,8 @@ public class TaskListMenu extends Menu {
 		 */
 		MenuBuilder creator = new MenuBuilder(i);
 		creator.setEntriesPerRow(TASKS_PER_ROW);
-		creator.setRowEndSpace(1);
-		creator.setRowStartSpace(1);
+		//creator.setRowEndSpace(1);
+		//creator.setRowStartSpace(1);
 		creator.setRowsPerPage(ROWS_PER_PAGE);
 		creator.setStartRow(1);
 		creator.create(getTasksForPage().stream().map(Task::getItemStack).collect(Collectors.toList()));
