@@ -11,11 +11,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.menu.menus.TaskListMenu;
+import net.yzimroni.tasklist.sql.SQL;
+import net.yzimroni.tasklist.sql.SQLUtils;
 import net.yzimroni.tasklist.task.Task;
 import net.yzimroni.tasklist.task.TaskManager;
 
 public class TaskListPlugin extends JavaPlugin {
 
+	private SQLUtils sql;
 	private TaskManager manager;
 	private MenuManager menuManager;
 
@@ -23,17 +26,40 @@ public class TaskListPlugin extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		getConfig().options().copyDefaults(true);
+		saveConfig();
 
+		try {
+			initSql();
+		} catch (Exception e) {
+			System.out.println("Failed to start sql:");
+			e.printStackTrace();
+		}
 		manager = new TaskManager();
 		menuManager = new MenuManager();
 		Bukkit.getPluginManager().registerEvents(menuManager, this);
 
 		instance = this;
+		
+		manager.loadTasks();
+	}
+
+	private void initSql() throws Exception {
+		SQL sql = new SQL(getConfig().getString("mysql.host"), getConfig().getInt("mysql.port"),
+				getConfig().getString("mysql.db"), getConfig().getString("mysql.username"),
+				getConfig().getString("mysql.password"));
+		this.sql = new SQLUtils(sql, getConfig().getString("mysql.prefix"));
+
 	}
 
 	@Override
 	public void onDisable() {
-
+		if (manager != null) {
+			manager.saveTasks();
+		}
+		if (sql != null) {
+			sql.close();
+		}
 	}
 
 	public static TaskListPlugin get() {
@@ -98,6 +124,10 @@ public class TaskListPlugin extends JavaPlugin {
 
 	public MenuManager getMenuManager() {
 		return menuManager;
+	}
+
+	public SQLUtils getSql() {
+		return sql;
 	}
 
 }
