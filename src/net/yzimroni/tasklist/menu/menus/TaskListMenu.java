@@ -18,7 +18,6 @@ import net.yzimroni.tasklist.menu.Menu;
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.menu.builder.MenuBuilder;
 import net.yzimroni.tasklist.task.Task;
-import net.yzimroni.tasklist.task.TaskManager;
 import net.yzimroni.tasklist.utils.Utils;
 
 public class TaskListMenu extends Menu {
@@ -77,16 +76,7 @@ public class TaskListMenu extends Menu {
 		// builder.setRowStartSpace(1);
 		builder.setRowsPerPage(ROWS_PER_PAGE);
 		builder.setStartRow(1);
-		List<Task> tasks = TaskListPlugin.get().getManager().getTasks().stream().sorted((t1, t2) -> {
-			if (t1.isCompleted() != t2.isCompleted()) {
-				if (t1.isCompleted()) {
-					return 1;
-				} else {
-					return -1;
-				}
-			}
-			return (int) (t2.getCreated() - t1.getCreated());
-		}).collect(Collectors.toList());
+		List<Task> tasks = TaskListPlugin.get().getManager().getSortedList();
 		builder.create(getTasksForPage(tasks).stream().map(Task::getItemStack).collect(Collectors.toList()));
 
 		if (hasPreviousPage()) {

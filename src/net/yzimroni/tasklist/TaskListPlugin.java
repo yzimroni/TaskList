@@ -61,7 +61,7 @@ public class TaskListPlugin extends JavaPlugin {
 						sender.sendMessage("Invalid number: " + args[1]);
 						return false;
 					}
-					String name = getText(args, 3);
+					String name = getText(args, 2);
 					if (manager.getTaskByName(name) != null) {
 						sender.sendMessage("Task already exist!");
 						return false;

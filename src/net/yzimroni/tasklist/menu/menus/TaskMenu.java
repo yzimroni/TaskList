@@ -52,7 +52,7 @@ public class TaskMenu extends Menu {
 		});
 		getItemTracker().addItemHandler(Utils.ITEM_BACK, (i, p) -> {
 			MenuManager.get().open(p, new TaskListMenu(
-					TaskListMenu.getPageNumberForTask(TaskListPlugin.get().getManager().getTasks(), task)));
+					TaskListMenu.getPageNumberForTask(TaskListPlugin.get().getManager().getSortedList(), task)));
 		});
 	}
 

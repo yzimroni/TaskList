@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class TaskManager {
 
 	private List<Task> tasks = new ArrayList<Task>();
+	private List<Task> sortedList = null;
 
 	public TaskManager() {
 		Random r = new Random();
@@ -23,6 +24,20 @@ public class TaskManager {
 		// tasks.add(new Task(2, "Test1", 10,
 		// UUID.fromString("341899b6-b28f-47a3-b85e-3aa3b491d0d3"), 1499962787,
 		// 1499963787));
+		sortTasks();
+	}
+	
+	public void sortTasks() {
+		sortedList = tasks.stream().sorted((t1, t2) -> {
+			if (t1.isCompleted() != t2.isCompleted()) {
+				if (t1.isCompleted()) {
+					return 1;
+				} else {
+					return -1;
+				}
+			}
+			return (int) (t2.getCreated() - t1.getCreated());
+		}).collect(Collectors.toList());
 	}
 
 	public List<Task> getTasks() {
@@ -44,10 +59,16 @@ public class TaskManager {
 
 	public void addTask(Task t) {
 		tasks.add(t);
+		sortTasks();
 	}
 
 	public void removeTask(Task t) {
 		tasks.remove(t);
+		sortTasks();
 	}
 
+	public List<Task> getSortedList() {
+		return sortedList;
+	}
+	
 }

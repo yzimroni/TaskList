@@ -123,10 +123,14 @@ public class ItemBuilder {
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		itemMeta.setDisplayName(displayName);
 		itemMeta.setLore(lore);
-		enchants.forEach((e, v) -> {
-			itemMeta.addEnchant(e, v, true);
-		});
-		itemFlags.forEach(itemMeta::addItemFlags);
+		if (enchants != null) {
+			enchants.forEach((e, v) -> {
+				itemMeta.addEnchant(e, v, true);
+			});
+		}
+		if (itemFlags != null) {
+			itemFlags.forEach(itemMeta::addItemFlags);
+		}
 
 		itemStack.setItemMeta(itemMeta);
 
