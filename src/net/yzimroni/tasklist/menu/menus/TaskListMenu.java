@@ -18,6 +18,7 @@ import net.yzimroni.tasklist.menu.Menu;
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.menu.builder.MenuBuilder;
 import net.yzimroni.tasklist.task.Task;
+import net.yzimroni.tasklist.task.TaskManager;
 import net.yzimroni.tasklist.utils.Utils;
 
 public class TaskListMenu extends Menu {
@@ -127,6 +128,16 @@ public class TaskListMenu extends Menu {
 			index_end = tasks.size();
 		}
 		return tasks.subList(index_start, index_end);
+	}
+
+	public static int getPageNumberForTask(List<Task> tasks, Task task) {
+		int index = tasks.indexOf(task);
+		if (index == -1) {
+			return 1;
+		}
+		int number = index + 1;
+		double page = (double) number / TASKS_PER_PAGE;
+		return (int) Math.ceil(page);
 	}
 
 }

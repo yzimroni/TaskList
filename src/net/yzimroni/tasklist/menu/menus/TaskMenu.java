@@ -9,10 +9,13 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.yzimroni.tasklist.TaskListPlugin;
 import net.yzimroni.tasklist.menu.Menu;
+import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.menu.builder.MenuBuilder;
 import net.yzimroni.tasklist.task.Task;
 import net.yzimroni.tasklist.utils.ItemBuilder;
+import net.yzimroni.tasklist.utils.Utils;
 
 public class TaskMenu extends Menu {
 
@@ -20,6 +23,8 @@ public class TaskMenu extends Menu {
 			.displayName(ChatColor.GOLD + "Complete!").build();
 	private static final ItemStack UNCOMPLETE = new ItemBuilder(Material.DIAMOND_ORE).glow()
 			.displayName(ChatColor.GRAY + "Mark as not completed").build();
+	private static final ItemStack DELETE = new ItemBuilder(Material.REDSTONE_BLOCK)
+			.displayName(ChatColor.RED + "Delete this task").build();
 
 	private Task task;
 
@@ -42,6 +47,13 @@ public class TaskMenu extends Menu {
 				updateInvenotry(p.getOpenInventory().getTopInventory());
 			}
 		});
+		getItemTracker().addItemHandler(DELETE, (i, p) -> {
+			MenuManager.get().open(p, new TaskDeleteMenu(task));
+		});
+		getItemTracker().addItemHandler(Utils.ITEM_BACK, (i, p) -> {
+			MenuManager.get().open(p, new TaskListMenu(
+					TaskListMenu.getPageNumberForTask(TaskListPlugin.get().getManager().getTasks(), task)));
+		});
 	}
 
 	@Override
@@ -61,6 +73,8 @@ public class TaskMenu extends Menu {
 
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		items.add(task.isCompleted() ? UNCOMPLETE : COMPLETE);
+		items.add(DELETE);
+		items.add(Utils.ITEM_BACK);
 
 		builder.create(items);
 	}

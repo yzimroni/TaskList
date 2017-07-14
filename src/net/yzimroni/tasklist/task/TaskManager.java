@@ -46,4 +46,8 @@ public class TaskManager {
 		tasks.add(t);
 	}
 
+	public void removeTask(Task t) {
+		tasks.remove(t);
+	}
+
 }
