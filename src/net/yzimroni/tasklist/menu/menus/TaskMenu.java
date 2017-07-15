@@ -37,7 +37,7 @@ public class TaskMenu extends Menu {
 	private void addItemTrackers() {
 		getItemTracker().addItemHandler(COMPLETE, (i, p) -> {
 			if (!task.isCompleted()) {
-				task.setCompleted(System.currentTimeMillis());
+				task.complete(p);
 				updateInvenotry(p.getOpenInventory().getTopInventory());
 			}
 		});
@@ -58,7 +58,7 @@ public class TaskMenu extends Menu {
 
 	@Override
 	public Inventory createInventory(Inventory inventory) {
-		Inventory i = Bukkit.createInventory(null, 2 * 9, "Task: " + task.getName());
+		Inventory i = Bukkit.createInventory(null, 3 * 9, "Task: " + task.getName());
 		updateInvenotry(i);
 		return i;
 	}
@@ -74,6 +74,7 @@ public class TaskMenu extends Menu {
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		items.add(task.isCompleted() ? UNCOMPLETE : COMPLETE);
 		items.add(DELETE);
+		items.add(MenuBuilder.BR);
 		items.add(Utils.ITEM_BACK);
 
 		builder.create(items);

@@ -3,6 +3,7 @@ package net.yzimroni.tasklist.menu.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class MenuRow {
@@ -27,6 +28,13 @@ public class MenuRow {
 		 * entriesPerRow.
 		 */
 		alignment = align.calculateAlign(items.size(), entriesPerRow);
+	}
+
+	public void addMiddleSpace() {
+		if (items.size() % 2 == 0) {
+			int middle = items.size() / 2;
+			items.add(middle, new ItemStack(Material.AIR));
+		}
 	}
 
 	public List<ItemStack> getItems() {

@@ -6,9 +6,11 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.yzimroni.tasklist.TaskListPlugin;
 import net.yzimroni.tasklist.utils.Utils;
 
 public class Task {
@@ -37,16 +39,27 @@ public class Task {
 		ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName((isCompleted() ? ChatColor.GOLD : ChatColor.BLUE) + getName());
 		meta.setLore(Arrays.asList("Task: " + getName(), "xp: " + xp,
-				"Creator: " + Bukkit.getOfflinePlayer(creator).getName(), "Created: " + Utils.formatDate(created),
+				"Creator: " + getCreatorName(), "Created: " + Utils.formatDate(created),
 				"Completed: " + (isCompleted() ? "Yes " + Utils.formatDate(completed) : "No")));
 
 		i.setItemMeta(meta);
 
 		return i;
 	}
+	
+	public void complete(Player p) {
+		setCompleted(System.currentTimeMillis());
+	}
 
 	public boolean isCompleted() {
 		return completed > 0;
+	}
+	
+	public String getCreatorName() {
+		if (creator != null) {
+			return Bukkit.getOfflinePlayer(creator).getName();
+		}
+		return "CONSOLE";
 	}
 
 	public int getId() {
@@ -82,6 +95,7 @@ public class Task {
 	public void setCreated(long created) {
 		changed = true;
 		this.created = created;
+		TaskListPlugin.get().getManager().sortTasks();
 	}
 
 	public long getCompleted() {
@@ -91,6 +105,7 @@ public class Task {
 	public void setCompleted(long completed) {
 		changed = true;
 		this.completed = completed;
+		TaskListPlugin.get().getManager().sortTasks();
 	}
 
 	public boolean isChanged() {

@@ -26,6 +26,7 @@ public class MenuBuilder {
 	private int rowStartSpace = -1;
 	private int rowEndSpace = -1;
 	private int startRow;
+	private boolean evenRowsMiddleSpace = true;
 
 	// Build values
 	private int currentSlot = 0;
@@ -47,6 +48,9 @@ public class MenuBuilder {
 		List<MenuRow> rows = getItemRows(items);
 
 		for (MenuRow row : rows) {
+			if (evenRowsMiddleSpace) {
+				row.addMiddleSpace();
+			}
 			row.calculateAlign(alignment, entriesPerRow);
 			currentSlot += rowStartSpace;
 			currentSlot += row.getAlignment()[0];
@@ -175,6 +179,14 @@ public class MenuBuilder {
 
 	public void setAlignment(MenuRowAlign alignment) {
 		this.alignment = alignment;
+	}
+
+	public boolean isEvenRowsMiddleSpace() {
+		return evenRowsMiddleSpace;
+	}
+
+	public void setEvenRowsMiddleSpace(boolean evenRowsMiddleSpace) {
+		this.evenRowsMiddleSpace = evenRowsMiddleSpace;
 	}
 
 }
