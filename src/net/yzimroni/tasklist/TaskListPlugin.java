@@ -46,10 +46,8 @@ public class TaskListPlugin extends JavaPlugin {
 	}
 
 	private void initSql() throws Exception {
-		SQL sql = new SQL(getConfig().getString("mysql.host"), getConfig().getInt("mysql.port"),
-				getConfig().getString("mysql.db"), getConfig().getString("mysql.username"),
-				getConfig().getString("mysql.password"));
-		this.sql = new SQLUtils(sql, getConfig().getString("mysql.prefix"));
+		SQL sql = new SQL("plugins/" + getName() + "/tasklist.db");
+		this.sql = new SQLUtils(sql, getConfig().getString("database.prefix"));
 
 	}
 

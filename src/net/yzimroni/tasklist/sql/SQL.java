@@ -8,30 +8,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQL {
-
-	private String host;
-	private int port;
-	private String database;
-	private String username;
-	private String password;
-
+	
+	private String file;
+	
 	private Connection connection = null;
-
-	public SQL(String host, int port, String database, String username, String password) throws Exception {
+	
+	public SQL(String file) throws Exception {
 		if (!checkDriver()) {
 			throw new RuntimeException("MySQL Driver not found");
 		}
-		this.host = host;
-		this.port = port;
-		this.database = database;
-		this.username = username;
-		this.password = password;
+		this.file = file;
 		open();
 	}
 
 	private boolean checkDriver() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.sqlite.JDBC");
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -39,8 +31,7 @@ public class SQL {
 	}
 
 	private Connection open() throws Exception {
-		this.connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username,
-				password);
+		this.connection = DriverManager.getConnection("jdbc:sqlite:" + file);
 		return connection;
 	}
 
@@ -53,7 +44,7 @@ public class SQL {
 
 	private boolean checkConncection() {
 		try {
-			return this.connection != null && !this.connection.isClosed() && this.connection.isValid(2000);
+			return this.connection != null && !this.connection.isClosed();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

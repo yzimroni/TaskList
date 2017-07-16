@@ -22,10 +22,22 @@ public class SQLUtils {
 		this.prefix = prefix;
 
 		instance = this;
+
+		createTables();
 	}
 
 	public static SQLUtils get() {
 		return instance;
+	}
+
+	public void createTables() {
+		PreparedStatement p = sql.getPrepare("CREATE TABLE IF NOT EXISTS " + prefix("tasks")
+				+ " ( `ID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `xp` INTEGER NOT NULL, `creator` TEXT, `created` INTEGER, `completed` INTEGER DEFAULT 0 );");
+		try {
+			p.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String prefix(String table) {
