@@ -109,7 +109,7 @@ public class ItemBuilder {
 		this.itemFlags.add(flag);
 		return this;
 	}
-	
+
 	public ItemBuilder glow() {
 		enchant(Enchantment.ARROW_DAMAGE, 1);
 		itemFlag(ItemFlag.HIDE_ENCHANTS);

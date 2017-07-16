@@ -36,11 +36,12 @@ public class TaskListPlugin extends JavaPlugin {
 			e.printStackTrace();
 		}
 		manager = new TaskManager();
+		Bukkit.getPluginManager().registerEvents(manager, this);
 		menuManager = new MenuManager();
 		Bukkit.getPluginManager().registerEvents(menuManager, this);
 
 		instance = this;
-		
+
 		manager.loadTasks();
 	}
 

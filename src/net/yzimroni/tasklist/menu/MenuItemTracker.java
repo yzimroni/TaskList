@@ -43,15 +43,15 @@ public class MenuItemTracker {
 			}
 		}
 	}
-	
+
 	public void clearItemHandlers() {
 		itemHandlers.clear();
 	}
-	
+
 	public void clearItemMatchersHandlers() {
 		itemMatcherHandlers.clear();
 	}
-	
+
 	public void clearAll() {
 		clearItemHandlers();
 		clearItemMatchersHandlers();

@@ -38,23 +38,32 @@ public class Task {
 		ItemStack i = new ItemStack(isCompleted() ? Material.MINECART : Material.STORAGE_MINECART);
 		ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName((isCompleted() ? ChatColor.GOLD : ChatColor.BLUE) + getName());
-		meta.setLore(Arrays.asList("Task: " + getName(), "xp: " + xp,
-				"Creator: " + getCreatorName(), "Created: " + Utils.formatDate(created),
+		meta.setLore(Arrays.asList("Task: " + getName(), "xp: " + xp, "Creator: " + getCreatorName(),
+				"Created: " + Utils.formatDate(created),
 				"Completed: " + (isCompleted() ? "Yes " + Utils.formatDate(completed) : "No")));
 
 		i.setItemMeta(meta);
 
 		return i;
 	}
-	
+
 	public void complete(Player p) {
+		Bukkit.broadcastMessage(ChatColor.GOLD + "Task completed: " + ChatColor.BOLD + name);
 		setCompleted(System.currentTimeMillis());
+		for (UUID u : Utils.DEFAULT_PLAYERS) {
+			Player player = Bukkit.getPlayer(u);
+			if (player != null) {
+				TaskListPlugin.get().getManager().addXp(player, xp);
+			} else {
+				// TODO
+			}
+		}
 	}
 
 	public boolean isCompleted() {
 		return completed > 0;
 	}
-	
+
 	public String getCreatorName() {
 		if (creator != null) {
 			return Bukkit.getOfflinePlayer(creator).getName();
