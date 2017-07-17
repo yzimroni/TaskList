@@ -103,8 +103,27 @@ public class TaskManager implements Listener {
 	}
 
 	public void addXp(Player p, int xp) {
-		p.giveExpLevels(xp);
+		float targetXp = getXPLevel(p) + xp;
 
+		new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				if (!p.isOnline()) {
+					cancel();
+					return;
+				}
+				float diff = targetXp - getXPLevel(p);
+				if (diff > 0) {
+					p.giveExp(Math.max(p.getExpToLevel() / 18, 1));
+				} else if (diff < 1 && diff > 0) {
+					p.giveExp((int) (diff * p.getExpToLevel()));
+				} else {
+					cancel();
+				}
+			}
+
+		}.runTaskTimer(TaskListPlugin.get(), 0, 1);
 		new BukkitRunnable() {
 
 			int times = 0;
@@ -130,6 +149,10 @@ public class TaskManager implements Listener {
 			}
 		}.runTaskTimer(TaskListPlugin.get(), 0, 4);
 
+	}
+
+	private float getXPLevel(Player p) {
+		return p.getLevel() + p.getExp();
 	}
 
 	@EventHandler

@@ -98,6 +98,24 @@ public class TaskListPlugin extends JavaPlugin {
 					manager.addTask(new Task(-1, name, xp, uuid, System.currentTimeMillis(), 0));
 					sender.sendMessage(ChatColor.GREEN + "Task '" + name + "' added!");
 				}
+			} else if (args[0].equalsIgnoreCase("changexp")) {
+				if (sender.isOp()) {
+					int xp = 0;
+					try {
+						xp = Integer.valueOf(args[1]);
+					} catch (Exception e) {
+						sender.sendMessage("Invalid number: " + args[1]);
+						return false;
+					}
+					String name = getText(args, 2);
+					Task task = manager.getTaskByName(name);
+					if (task == null) {
+						sender.sendMessage("Task not exists!");
+						return false;
+					}
+					task.setXp(xp);
+					sender.sendMessage("You've changed task '" + task.getName() + "' xp to " + xp);
+				}
 			}
 		}
 		return false;
