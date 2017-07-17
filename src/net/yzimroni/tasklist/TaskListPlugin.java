@@ -1,14 +1,22 @@
 package net.yzimroni.tasklist;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.yzimroni.commandmanager.command.Command;
+import net.yzimroni.commandmanager.command.SubCommand;
+import net.yzimroni.commandmanager.command.args.ArgumentParseData;
+import net.yzimroni.commandmanager.command.args.ArgumentValidCheck;
+import net.yzimroni.commandmanager.command.args.CommandArgument;
+import net.yzimroni.commandmanager.command.args.arguments.IntegerArgument;
+import net.yzimroni.commandmanager.command.args.arguments.StringArgument;
+import net.yzimroni.commandmanager.manager.CommandManager;
 import net.yzimroni.tasklist.menu.MenuManager;
 import net.yzimroni.tasklist.menu.menus.TaskListMenu;
 import net.yzimroni.tasklist.sql.SQL;
@@ -43,11 +51,91 @@ public class TaskListPlugin extends JavaPlugin {
 		instance = this;
 
 		manager.loadTasks();
+
+		initCommands();
 	}
 
 	private void initSql() throws Exception {
 		SQL sql = new SQL("plugins/" + getName() + "/tasklist.db");
 		this.sql = new SQLUtils(sql, getConfig().getString("database.prefix"));
+
+	}
+
+	private void initCommands() {
+		Command tasklist = new Command("tasklist", "TaskList command", (sender, command, args) -> {
+			MenuManager.get().open((Player) sender, new TaskListMenu(1));
+		});
+		tasklist.setAliases("tl", "task", "t");
+		tasklist.setOnlyPlayer(true);
+		tasklist.setAutoHelpCommand(true);
+
+		SubCommand add = new SubCommand("add", "Add a new task", (sender, command, args) -> {
+			String taskName = args.get("task", String.class);
+			int xp = args.get("xp", Integer.class);
+			if (manager.getTaskByName(taskName) != null) {
+				sender.sendMessage("Task already exist!");
+				return;
+			}
+			UUID uuid = null;
+			if (sender instanceof Player) {
+				uuid = ((Player) sender).getUniqueId();
+			}
+			manager.addTask(new Task(-1, taskName, xp, uuid, System.currentTimeMillis(), 0));
+			sender.sendMessage(ChatColor.GREEN + "Task '" + taskName + "' added!");
+		});
+		add.setPermission("tasklist.op");
+		add.addArgument(new IntegerArgument("xp", true, 1, 100, true));
+		add.addArgument(new StringArgument("task", true, true));
+
+		tasklist.addSubCommand(add);
+
+		CommandArgument<Task> taskArgument = new CommandArgument<Task>("task") {
+
+			@Override
+			public Task getInput(ArgumentParseData data) {
+				return manager.getTaskByName(data.getInput());
+			}
+
+			@Override
+			public String getInputType() {
+				return "Task name";
+			}
+
+			@Override
+			public List<String> getTabCompleteOptions(ArgumentParseData data) {
+				return Arrays.asList();
+			}
+
+			@Override
+			public String getValidInputs() {
+				return "";
+			}
+
+			@Override
+			public ArgumentValidCheck isValidInput(ArgumentParseData data) {
+				return ArgumentValidCheck.create(manager.getTaskByName(data.getInput()) != null, "Task not exists");
+			}
+
+			@Override
+			public boolean isVarArgs() {
+				return true;
+			}
+		};
+
+		SubCommand changeXp = new SubCommand("changexp", "Change the xp reward of a task", (sender, command, args) -> {
+			Task task = args.get("task", Task.class);
+			int xp = args.get("xp", Integer.class);
+			task.setXp(xp);
+			sender.sendMessage(ChatColor.GREEN + "You've changed task '" + task.getName() + "' xp to " + xp);
+		});
+
+		changeXp.setPermission("tasklist.op");
+		changeXp.addArgument(new IntegerArgument("xp", true, 1, 100, true));
+		changeXp.addArgument(taskArgument);
+
+		tasklist.addSubCommand(changeXp);
+
+		CommandManager.get().registerCommand(this, tasklist);
 
 	}
 
@@ -63,76 +151,6 @@ public class TaskListPlugin extends JavaPlugin {
 
 	public static TaskListPlugin get() {
 		return instance;
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (sender instanceof Player && args.length == 0) {
-			MenuManager.get().open((Player) sender, new TaskListMenu(1));
-			return false;
-		}
-		if (args.length == 0 || args.length == 1 && args[0].equalsIgnoreCase("help")) {
-			if (sender.isOp()) {
-				sender.sendMessage(ChatColor.GREEN + "/" + label.toLowerCase() + " add <xp> <text>");
-			}
-		}
-		if (args.length >= 3) {
-			if (args[0].equalsIgnoreCase("add")) {
-				if (sender.isOp()) {
-					int xp = 0;
-					try {
-						xp = Integer.valueOf(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage("Invalid number: " + args[1]);
-						return false;
-					}
-					String name = getText(args, 2);
-					if (manager.getTaskByName(name) != null) {
-						sender.sendMessage("Task already exist!");
-						return false;
-					}
-					UUID uuid = null;
-					if (sender instanceof Player) {
-						uuid = ((Player) sender).getUniqueId();
-					}
-					manager.addTask(new Task(-1, name, xp, uuid, System.currentTimeMillis(), 0));
-					sender.sendMessage(ChatColor.GREEN + "Task '" + name + "' added!");
-				}
-			} else if (args[0].equalsIgnoreCase("changexp")) {
-				if (sender.isOp()) {
-					int xp = 0;
-					try {
-						xp = Integer.valueOf(args[1]);
-					} catch (Exception e) {
-						sender.sendMessage("Invalid number: " + args[1]);
-						return false;
-					}
-					String name = getText(args, 2);
-					Task task = manager.getTaskByName(name);
-					if (task == null) {
-						sender.sendMessage("Task not exists!");
-						return false;
-					}
-					task.setXp(xp);
-					sender.sendMessage("You've changed task '" + task.getName() + "' xp to " + xp);
-				}
-			}
-		}
-		return false;
-	}
-
-	public static String getText(String[] args, int start) {
-		if (args.length <= start) {
-			return null;
-		}
-		String result = "";
-		for (int i = start; i < args.length; i++) {
-			if (!result.isEmpty()) {
-				result += " ";
-			}
-			result += args[i];
-		}
-		return result;
 	}
 
 	public TaskManager getManager() {

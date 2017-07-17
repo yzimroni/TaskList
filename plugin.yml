@@ -2,6 +2,7 @@ name: TaskList
 main: net.yzimroni.tasklist.TaskListPlugin
 version: 1.0
 description: TaskList plugin
+depend: [CommandManager]
 authors: [yzimroni]
 commands:
   tasklist:
