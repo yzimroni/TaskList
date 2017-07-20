@@ -2,10 +2,12 @@ package net.yzimroni.tasklist.menu.menus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -44,6 +46,12 @@ public class TaskMenu extends Menu {
 		getItemTracker().addItemHandler(UNCOMPLETE, (i, p) -> {
 			if (task.isCompleted()) {
 				task.setCompleted(0);
+				for (UUID u : Utils.DEFAULT_PLAYERS) {
+					Player player = Bukkit.getPlayer(u);
+					if (player != null) {
+						p.setLevel(Math.max(p.getLevel() - task.getXp(), 0));
+					}
+				}
 				updateInvenotry(p.getOpenInventory().getTopInventory());
 			}
 		});

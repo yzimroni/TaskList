@@ -69,44 +69,46 @@ public class SQLUtils {
 	}
 
 	public void saveTask(Task t) {
-		if (t.getId() == -1) {
-			PreparedStatement p = sql.getPrepareAutoKeys(
-					"INSERT INTO " + prefix("tasks") + " (name,xp,creator,created,completed) VALUES(?,?,?,?,?)");
-			try {
-				p.setString(1, t.getName());
-				p.setInt(2, t.getXp());
-				if (t.getCreator() == null) {
-					p.setNull(3, Types.VARCHAR);
-				} else {
-					p.setString(3, t.getCreator().toString());
+		synchronized (t) {
+			if (t.getId() == -1) {
+				PreparedStatement p = sql.getPrepareAutoKeys(
+						"INSERT INTO " + prefix("tasks") + " (name,xp,creator,created,completed) VALUES(?,?,?,?,?)");
+				try {
+					p.setString(1, t.getName());
+					p.setInt(2, t.getXp());
+					if (t.getCreator() == null) {
+						p.setNull(3, Types.VARCHAR);
+					} else {
+						p.setString(3, t.getCreator().toString());
+					}
+					p.setLong(4, t.getCreated());
+					p.setLong(5, t.getCompleted());
+					p.executeUpdate();
+					int id = sql.getIdFromPrepared(p);
+					t.setId(id);
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-				p.setLong(4, t.getCreated());
-				p.setLong(5, t.getCompleted());
-				p.executeUpdate();
-				int id = sql.getIdFromPrepared(p);
-				t.setId(id);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else if (t.isChanged()) {
-			PreparedStatement p = sql.getPrepare(
-					"UPDATE " + prefix("tasks") + " SET name=?,xp=?,creator=?,created=?,completed=? WHERE ID=?");
-			try {
-				p.setString(1, t.getName());
-				p.setInt(2, t.getXp());
-				if (t.getCreator() == null) {
-					p.setNull(3, Types.VARCHAR);
-				} else {
-					p.setString(3, t.getCreator().toString());
-				}
-				p.setLong(4, t.getCreated());
-				p.setLong(5, t.getCompleted());
+			} else if (t.isChanged()) {
+				PreparedStatement p = sql.getPrepare(
+						"UPDATE " + prefix("tasks") + " SET name=?,xp=?,creator=?,created=?,completed=? WHERE ID=?");
+				try {
+					p.setString(1, t.getName());
+					p.setInt(2, t.getXp());
+					if (t.getCreator() == null) {
+						p.setNull(3, Types.VARCHAR);
+					} else {
+						p.setString(3, t.getCreator().toString());
+					}
+					p.setLong(4, t.getCreated());
+					p.setLong(5, t.getCompleted());
 
-				p.setInt(6, t.getId());
-				p.executeUpdate();
-				t.setChanged(false);
-			} catch (SQLException e) {
-				e.printStackTrace();
+					p.setInt(6, t.getId());
+					p.executeUpdate();
+					t.setChanged(false);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

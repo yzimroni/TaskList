@@ -28,21 +28,7 @@ public class TaskManager implements Listener {
 	private List<Task> sortedList = null;
 
 	public TaskManager() {
-		/*
-		 * Random r = new Random(); for (int i = 0; i < 100 + (r.nextInt(100) - 50) ;
-		 * i++) {
-		 * 
-		 * addTask(new Task(-1, "Task" + i, r.nextInt(100) + 1,
-		 * UUID.fromString("341899b6-b28f-47a3-b85e-3aa3b491d0d3"),
-		 * System.currentTimeMillis() - (i * (i + 10)), r.nextBoolean() ? 0 :
-		 * System.currentTimeMillis() - i)); }
-		 */
-		// tasks.add(new Task(1, "Test", 10,
-		// UUID.fromString("341899b6-b28f-47a3-b85e-3aa3b491d0d3"), 1499962787, 0));
-		// tasks.add(new Task(2, "Test1", 10,
-		// UUID.fromString("341899b6-b28f-47a3-b85e-3aa3b491d0d3"), 1499962787,
-		// 1499963787));
-		sortTasks();
+
 	}
 
 	public void loadTasks() {
@@ -64,7 +50,7 @@ public class TaskManager implements Listener {
 	}
 
 	public void saveTasks() {
-		tasks.forEach(SQLUtils.get()::saveTask);
+		tasks.forEach(Task::save);
 	}
 
 	public List<Task> getTasks() {
@@ -107,6 +93,8 @@ public class TaskManager implements Listener {
 
 		new BukkitRunnable() {
 
+			int times = 0;
+
 			@Override
 			public void run() {
 				if (!p.isOnline()) {
@@ -114,6 +102,12 @@ public class TaskManager implements Listener {
 					return;
 				}
 				float diff = targetXp - getXPLevel(p);
+				if (times++ >= 3000) {
+					System.out.println("Xp animation task did not cancelled: " + p.getName() + ", targetXp: " + targetXp
+							+ ", diff: " + diff);
+					cancel();
+					return;
+				}
 				if (diff > 0) {
 					p.giveExp(Math.max(p.getExpToLevel() / 18, 1));
 				} else if (diff < 1 && diff > 0) {

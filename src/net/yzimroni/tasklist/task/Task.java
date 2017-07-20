@@ -54,8 +54,6 @@ public class Task {
 			Player player = Bukkit.getPlayer(u);
 			if (player != null) {
 				TaskListPlugin.get().getManager().addXp(player, xp);
-			} else {
-				// TODO
 			}
 		}
 	}
@@ -69,6 +67,10 @@ public class Task {
 			return Bukkit.getOfflinePlayer(creator).getName();
 		}
 		return "CONSOLE";
+	}
+	
+	public void save() {
+		TaskListPlugin.get().getSql().saveTask(this);
 	}
 
 	public int getId() {
@@ -111,10 +113,12 @@ public class Task {
 		return completed;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void setCompleted(long completed) {
 		changed = true;
 		this.completed = completed;
 		TaskListPlugin.get().getManager().sortTasks();
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(TaskListPlugin.get(), this::save);
 	}
 
 	public boolean isChanged() {
