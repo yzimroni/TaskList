@@ -19,12 +19,12 @@ public class MenuBuilder {
 
 	// General settings
 	private int entriesPerRow = -1;
-	private int rowsPerPage = 3;
+	private int rowsPerPage;
 	private MenuRowAlign alignment = MenuRowAlign.CENTER;
 
 	// Spacing
-	private int rowStartSpace = -1;
-	private int rowEndSpace = -1;
+	private int rowStartSpace = 0;
+	private int rowEndSpace = 0;
 	private int startRow;
 	private boolean evenRowsMiddleSpace = true;
 

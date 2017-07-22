@@ -25,6 +25,8 @@ public class TaskMenu extends Menu {
 			.displayName(ChatColor.GOLD + "Complete!").build();
 	private static final ItemStack UNCOMPLETE = new ItemBuilder(Material.DIAMOND_ORE).glow()
 			.displayName(ChatColor.GRAY + "Mark as not completed").build();
+	private static final ItemStack CHANGE_XP = new ItemBuilder(Material.EXP_BOTTLE)
+			.displayName(ChatColor.GREEN + "Change xp").build();
 	private static final ItemStack DELETE = new ItemBuilder(Material.REDSTONE_BLOCK)
 			.displayName(ChatColor.RED + "Delete this task").build();
 
@@ -62,6 +64,11 @@ public class TaskMenu extends Menu {
 			MenuManager.get().open(p, new TaskListMenu(
 					TaskListMenu.getPageNumberForTask(TaskListPlugin.get().getManager().getSortedList(), task)));
 		});
+		getItemTracker().addItemHandler(CHANGE_XP, (i, p) -> {
+			if (!task.isCompleted()) {
+				MenuManager.get().open(p, new ChangeXpMenu(task, 1));
+			}
+		});
 	}
 
 	@Override
@@ -81,6 +88,9 @@ public class TaskMenu extends Menu {
 
 		List<ItemStack> items = new ArrayList<ItemStack>();
 		items.add(task.isCompleted() ? UNCOMPLETE : COMPLETE);
+		if (!task.isCompleted()) {
+			items.add(CHANGE_XP);
+		}
 		items.add(DELETE);
 		items.add(MenuBuilder.BR);
 		items.add(Utils.ITEM_BACK);
