@@ -8,14 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQL {
-	
+
 	private String file;
-	
+
 	private Connection connection = null;
-	
+
 	public SQL(String file) throws Exception {
 		if (!checkDriver()) {
-			throw new RuntimeException("MySQL Driver not found");
+			throw new RuntimeException("SQLite Driver not found");
 		}
 		this.file = file;
 		open();

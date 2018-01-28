@@ -22,7 +22,7 @@ public class MenuRow {
 
 	public void calculateAlign(MenuRowAlign align, int entriesPerRow) {
 		/*
-		 * We use entriesPerRow and not SLOTS_PER_ROW because we already calculate The
+		 * We use entriesPerRow and not SLOTS_PER_ROW because we already calculated the
 		 * different between SLOTS_PER_ROW and entriesPerRow in MenuBuilder#checkValid,
 		 * So we just have to check the different between the amount of items and
 		 * entriesPerRow.

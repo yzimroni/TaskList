@@ -96,7 +96,6 @@ public class TaskListMenu extends Menu {
 		i.setItem(49, diamond);
 
 		if (hasNextPage()) {
-			// 50
 			i.setItem(50, Utils.ITEM_NEXT);
 		}
 	}

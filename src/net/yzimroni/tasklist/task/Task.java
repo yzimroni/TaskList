@@ -68,7 +68,7 @@ public class Task {
 		}
 		return "CONSOLE";
 	}
-	
+
 	public void save() {
 		TaskListPlugin.get().getSql().saveTask(this);
 	}
